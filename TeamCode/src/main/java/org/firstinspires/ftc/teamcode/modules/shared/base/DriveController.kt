@@ -14,10 +14,10 @@ interface DriveController {
      */
     fun driveByTime(seconds: Long, direction: Direction)
     /** Moves the robot by a certain distance in a certain direction
-     * @param feet The number of feet the robot should move in
+     * @param inches The number of inches the robot should move in
      * @param direction The direction for the robot to move in
      */
-    fun driveByDistance(feet: Double, direction: Direction)
+    fun driveByDistance(inches: Int, direction: Direction)
     /** Moves the robot based on the attached controller
      */
     fun driveByController()
