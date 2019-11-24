@@ -53,8 +53,8 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
     }
 
     override fun driveByController() {
-        val strafe = robot.gamepad1.left_stick_y.toDouble() * MULTIPLIER
-        val drive =  -robot.gamepad1.right_stick_x.toDouble() * MULTIPLIER
+        val drive = -robot.gamepad1.left_stick_y.toDouble() * MULTIPLIER
+        val strafe =  robot.gamepad1.right_stick_x.toDouble() * MULTIPLIER
         var turn = 0.0
         if (robot.gamepad1.right_bumper) {
             turn -= 1.0 * MULTIPLIER
@@ -72,10 +72,10 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
     }
 
     private fun drive(drive: Double, turn: Double, strafe: Double) {
-        robot.leftMotors[1].power = Range.clip(drive+turn-strafe, -1.0, 1.0)
-        robot.leftMotors[0].power = Range.clip(drive+turn+strafe, -1.0, 1.0)
-        robot.rightMotors[0].power = Range.clip(drive-turn-strafe, -1.0, 1.0)
-        robot.rightMotors[1].power = Range.clip(drive-turn+strafe, -1.0, 1.0)
+        robot.leftMotors[Robot.FRONT].power = Range.clip(drive+turn+strafe, -1.0, 1.0)
+        robot.leftMotors[Robot.BACK].power = Range.clip(drive-turn+strafe, -1.0, 1.0)
+        robot.rightMotors[Robot.FRONT].power = Range.clip(drive-turn-strafe, -1.0, 1.0)
+        robot.rightMotors[Robot.BACK].power = Range.clip(drive+turn-strafe, -1.0, 1.0)
     }
 
     fun brake() {

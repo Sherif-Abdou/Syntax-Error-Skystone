@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.teamcode.modules.autonomous.Mapable
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
-abstract class Robot: Mapable {
+abstract class Robot : Mapable {
 
     // Controller Modules
     abstract var DriveController: DriveController
@@ -31,10 +31,15 @@ abstract class Robot: Mapable {
     abstract var map: HardwareMap
 
     abstract var telemetry: Telemetry
-    abstract var sleep: (Long)->Unit
+    abstract var sleep: (Long) -> Unit
 
     override var x: Float = -1.0f
     override var y: Float = -1.0f
     override var length: Float = -1.0f
     override var width: Float = -1.0f
+
+    companion object {
+        const val FRONT = 0
+        const val BACK = 1
+    }
 }
