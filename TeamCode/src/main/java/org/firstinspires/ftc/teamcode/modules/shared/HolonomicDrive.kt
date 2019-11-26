@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 class HolonomicDrive(override val robot: Robot) : DriveController {
     /** Base Drive Speeed */
     var driveSpeed: Double = 0.5
-    
+
     override fun driveByTime(seconds: Long, direction: Direction) {
         when (direction) {
             NORTH -> drive(driveSpeed, 0.0, 0.0)
@@ -65,6 +65,14 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
         }
         if (robot.gamepad1.left_bumper) {
            turn += 1.0 * MULTIPLIER
+        }
+
+        if (robot.gamepad1.dpad_up) {
+            driveSpeed += 0.1
+        }
+
+        if (robot.gamepad1.dpad_down) {
+            driveSpeed -= 0.1
         }
 
         // Checks if the main joystick is being moved, if not check strafe nxt
