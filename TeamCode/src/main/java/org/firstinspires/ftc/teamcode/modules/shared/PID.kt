@@ -5,7 +5,7 @@ class PID(var P: Double = 0.0, var I: Double = 0.0, var D: Double = 0.0) {
     private var previous_err: Double = 0.0
     private var i = 0.0
 
-    var i_limit = 100.0
+    var i_limit = 1.0
 
     fun loop(current_time: Double, desired_position: Double, current_position: Double): Double {
         val current_err = desired_position - current_position

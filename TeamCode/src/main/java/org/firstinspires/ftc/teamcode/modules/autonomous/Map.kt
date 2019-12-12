@@ -38,8 +38,8 @@ class Map(private val start: Starts, val robot: Robot) {
 fun HolonomicDrive.moveToPoint(x: Double, y: Double) {
     val delta_x = x - robot.x
     val delta_y = y - robot.y
-    driveByDistance(delta_x, Direction.WEST)
-    driveByDistance(delta_y, Direction.NORTH)
+    driveByDistance(delta_x.toInt(), Direction.WEST)
+    driveByDistance(delta_y.toInt(), Direction.NORTH)
     robot.x = x.toFloat()
     robot.y = y.toFloat()
 }

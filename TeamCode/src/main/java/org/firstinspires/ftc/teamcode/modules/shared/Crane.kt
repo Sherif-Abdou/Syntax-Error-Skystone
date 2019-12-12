@@ -18,7 +18,6 @@ class Crane(val robot: BaseRobot) {
 
     fun grab() {
         val currentPosition = servos["claw"]?.position
-        robot.telemetry.addData("position", currentPosition ?: -1)
         when (currentPosition) {
             0.0 -> servos["claw"]?.position = 0.25
             null -> this.servos["claw"]!!.position = 0.0

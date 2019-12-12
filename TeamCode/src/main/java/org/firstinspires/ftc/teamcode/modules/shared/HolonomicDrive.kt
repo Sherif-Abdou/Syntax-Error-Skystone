@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.modules.shared.base.Direction
 import org.firstinspires.ftc.teamcode.modules.shared.base.Direction.*
 import org.firstinspires.ftc.teamcode.modules.shared.base.DriveController
 import org.firstinspires.ftc.teamcode.modules.shared.base.Robot
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /** A drive component for a holonomic drivetrain
@@ -29,16 +30,16 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
     }
 
     override fun driveByDistance(inches: Int, direction: Direction) {
-        var fLeftEncoder = inches * (UNITSPERREVOLUTION*(WHEELDIAMETER*Math.PI) * GEARRATIO)
+        var fLeftEncoder = (inches * UNITSPERREVOLUTION) / (Math.PI * WHEELDIAMETER)
 
         // Reverses the direction if motor goes reverse
-        if (direction == SOUTH ||direction == EAST) {
+        if (direction == NORTH ||direction == WEST) {
             fLeftEncoder *= -1
         }
 
         robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_TO_POSITION
         robot.leftMotors[Robot.FRONT].targetPosition = fLeftEncoder.roundToInt()
+        robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_TO_POSITION
 
         when (direction) {
             NORTH -> drive(driveSpeed, 0.0, 0.0)
@@ -47,13 +48,24 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
             WEST -> drive(0.0,0.0, driveSpeed)
         }
 
-        while (robot.leftMotors[Robot.FRONT].isBusy) {
-            robot.telemetry.addData("Encoder Position", robot.leftMotors[Robot.FRONT].currentPosition)
+        while (robot.leftMotors[Robot.FRONT].isBusy
+                && abs(robot.leftMotors[Robot.FRONT].targetPosition) >= abs(robot.leftMotors[Robot.FRONT].currentPosition)) {
+            telemetry()
+            robot.telemetry.update()
         }
 
         brake()
 
         robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+    }
+
+    private fun telemetry() {
+        robot.telemetry.addData("Encoder Position", robot.leftMotors[Robot.FRONT].currentPosition)
+        robot.telemetry.addData("Target", robot.leftMotors[Robot.FRONT].targetPosition)
+        robot.telemetry.addData("LF", "${robot.leftMotors[Robot.FRONT].power}")
+        robot.telemetry.addData("LB", "${robot.leftMotors[Robot.BACK].power}")
+        robot.telemetry.addData("RF", "${robot.rightMotors[Robot.FRONT].power}")
+        robot.telemetry.addData("RB", "${robot.rightMotors[Robot.BACK].power}")
     }
 
     override fun driveByController() {
@@ -81,13 +93,14 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
         } else {
             brake()
         }
+        telemetry()
     }
 
     private fun drive(drive: Double, turn: Double, strafe: Double) {
-        robot.leftMotors[Robot.FRONT].power = Range.clip(drive+turn+strafe, -1.0, 1.0)
-        robot.leftMotors[Robot.BACK].power = Range.clip(drive-turn+strafe, -1.0, 1.0)
-        robot.rightMotors[Robot.FRONT].power = Range.clip(drive-turn-strafe, -1.0, 1.0)
-        robot.rightMotors[Robot.BACK].power = Range.clip(drive+turn-strafe, -1.0, 1.0)
+        robot.leftMotors[Robot.FRONT].power = Range.clip(drive+strafe+turn, -1.0, 1.0)
+        robot.rightMotors[Robot.FRONT].power = Range.clip(drive-strafe-turn, -1.0, 1.0)
+        robot.leftMotors[Robot.BACK].power = Range.clip(drive-strafe+turn, -1.0, 1.0)
+        robot.rightMotors[Robot.BACK].power = Range.clip(drive+strafe-turn, -1.0, 1.0)
     }
 
     fun brake() {

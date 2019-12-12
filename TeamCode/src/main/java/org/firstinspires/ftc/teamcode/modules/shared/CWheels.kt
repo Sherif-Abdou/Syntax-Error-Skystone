@@ -15,8 +15,6 @@ class CWheels(val robot: Robot) {
 
     fun runByController() {
         if (robot.gamepad1.y) {
-            robot.telemetry.addData("CWheels", running)
-            robot.telemetry.update()
             running = !running
             robot.sleep(400L)
         }

@@ -31,9 +31,9 @@ class CompTeleOp: LinearOpMode() {
             val motor = hardwareMap.dcMotor.get("motor_$i")
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
             if (i % 2 == 0 && i != 0) {
-                motor.direction = DcMotorSimple.Direction.REVERSE
                 robot.rightMotors.add(motor)
             } else if (i == 0) {
+                motor.direction = DcMotorSimple.Direction.REVERSE
                 robot.rightMotors.add(motor)
             } else {
                 robot.leftMotors.add(motor)

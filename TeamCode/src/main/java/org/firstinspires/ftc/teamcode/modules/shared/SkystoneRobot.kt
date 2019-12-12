@@ -23,7 +23,6 @@ class SkystoneRobot(map: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad, tele
         DriveController.driveByController()
         crane.runByController()
         cWheels.runByController()
+        telemetry.update()
     }
-
-
 }

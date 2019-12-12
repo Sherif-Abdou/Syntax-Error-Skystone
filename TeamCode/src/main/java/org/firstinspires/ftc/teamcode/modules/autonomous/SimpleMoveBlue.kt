@@ -21,8 +21,8 @@ class SimpleMoveBlue: LinearOpMode() {
         robot.cWheels.initialize()
 
         waitForStart()
-        robot.DriveController.driveByTime(500L, Direction.EAST)
-        robot.DriveController.driveByTime(500L, Direction.NORTH)
+        robot.DriveController.driveByDistance(1000, Direction.NORTH)
+        robot.DriveController.driveByDistance(1000, Direction.SOUTH)
         (robot.DriveController as HolonomicDrive).brake()
     }
 
