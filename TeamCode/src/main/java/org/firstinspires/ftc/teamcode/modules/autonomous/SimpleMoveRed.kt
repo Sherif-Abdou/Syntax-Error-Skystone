@@ -33,6 +33,7 @@ class SimpleMoveRed: LinearOpMode() {
 
         while (opModeIsActive()) {
             telemetry.addData("Delta", after!!-before!!)
+            telemetry.update()
         }
     }
 

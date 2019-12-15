@@ -35,7 +35,7 @@ class PID(var P: Double = 0.0, var I: Double = 0.0, var D: Double = 0.0) {
 }
 
 fun HolonomicDrive.DriveToRotation(rotation: Double, gyro: Gyro, running: ()-> Boolean) {
-    val pidDrive = PID(.0165, .00000, 0.5)
+    val pidDrive = PID(.015, .00000, 0.5)
     var t = 0
     var power = 0.0
     do {
@@ -44,10 +44,11 @@ fun HolonomicDrive.DriveToRotation(rotation: Double, gyro: Gyro, running: ()-> B
         robot.telemetry.addData("pid power", power)
         robot.telemetry.addData("time", t)
         gyro.telemetry()
+        telemetry()
         robot.telemetry.update()
         robot.sleep(20)
         t+=20
-    } while (running())
+    } while (running() && abs(power)>=0.03)
 
     brake()
 }

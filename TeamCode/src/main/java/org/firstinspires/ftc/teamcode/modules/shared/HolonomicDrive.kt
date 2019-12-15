@@ -59,7 +59,7 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
         robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    private fun telemetry() {
+    fun telemetry() {
         robot.telemetry.addData("Encoder Position", robot.leftMotors[Robot.FRONT].currentPosition)
         robot.telemetry.addData("Target", robot.leftMotors[Robot.FRONT].targetPosition)
         robot.telemetry.addData("LF", "${robot.leftMotors[Robot.FRONT].power}")
