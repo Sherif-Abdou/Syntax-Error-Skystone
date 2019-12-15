@@ -1,3 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.shared.base
 
-interface GyroController
+public interface GyroController {
+    val robot: Robot
+}

@@ -96,7 +96,7 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
         telemetry()
     }
 
-    private fun drive(drive: Double, turn: Double, strafe: Double) {
+    fun drive(drive: Double, turn: Double, strafe: Double) {
         robot.leftMotors[Robot.FRONT].power = Range.clip(drive+strafe+turn, -1.0, 1.0)
         robot.rightMotors[Robot.FRONT].power = Range.clip(drive-strafe-turn, -1.0, 1.0)
         robot.leftMotors[Robot.BACK].power = Range.clip(drive-strafe+turn, -1.0, 1.0)

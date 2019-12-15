@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.teleop
 
+import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -17,6 +18,7 @@ class CompTeleOp: LinearOpMode() {
 
         robot.crane.initialize()
         robot.cWheels.initialize()
+        robot.gyro.initialize()
 
         waitForStart()
 
@@ -30,23 +32,25 @@ class CompTeleOp: LinearOpMode() {
         for (i in 0 until 4) {
             val motor = hardwareMap.dcMotor.get("motor_$i")
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-            if (i % 2 == 0 && i != 0) {
-                robot.rightMotors.add(motor)
-            } else if (i == 0) {
+            if (i == 0) {
                 motor.direction = DcMotorSimple.Direction.REVERSE
+            }
+
+            if (i % 2 == 0) {
                 robot.rightMotors.add(motor)
             } else {
                 robot.leftMotors.add(motor)
             }
         }
-        robot.other_motors["bottom"] = hardwareMap.dcMotor.get("bottom")
-        robot.other_motors["bottom"]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        robot.other_motors["rc"] = hardwareMap.dcMotor.get("rc")
-        robot.other_motors["lc"] = hardwareMap.dcMotor.get("lc")
+        robot.imu = hardwareMap.get(BNO055IMU::class.java, "imu")
+//        robot.other_motors["bottom"] = hardwareMap.dcMotor.get("bottom")
+//        robot.other_motors["bottom"]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+//        robot.other_motors["rc"] = hardwareMap.dcMotor.get("rc")
+//        robot.other_motors["lc"] = hardwareMap.dcMotor.get("lc")
     }
 
     private fun initializeServos() {
-        robot.servos["claw"] = hardwareMap.servo.get("claw")
-        robot.servos["counter"] = hardwareMap.servo.get("counter")
+//        robot.servos["claw"] = hardwareMap.servo.get("claw")
+//        robot.servos["counter"] = hardwareMap.servo.get("counter")
     }
 }

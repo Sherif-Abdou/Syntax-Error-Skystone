@@ -40,14 +40,14 @@ class SimpleMoveBlue: LinearOpMode() {
                 robot.leftMotors.add(motor)
             }
         }
-        robot.other_motors["bottom"] = hardwareMap.dcMotor.get("bottom")
-        robot.other_motors["bottom"]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        robot.other_motors["rc"] = hardwareMap.dcMotor.get("rc")
-        robot.other_motors["lc"] = hardwareMap.dcMotor.get("lc")
+//        robot.other_motors["bottom"] = hardwareMap.dcMotor.get("bottom")
+//        robot.other_motors["bottom"]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+//        robot.other_motors["rc"] = hardwareMap.dcMotor.get("rc")
+//        robot.other_motors["lc"] = hardwareMap.dcMotor.get("lc")
     }
 
     private fun initializeServos() {
-        robot.servos["claw"] = hardwareMap.servo.get("claw")
-        robot.servos["counter"] = hardwareMap.servo.get("counter")
+//        robot.servos["claw"] = hardwareMap.servo.get("claw")
+//        robot.servos["counter"] = hardwareMap.servo.get("counter")
     }
 }
