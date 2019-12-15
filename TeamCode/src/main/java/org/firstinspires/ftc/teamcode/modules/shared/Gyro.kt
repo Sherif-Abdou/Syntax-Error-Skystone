@@ -30,12 +30,12 @@ public class Gyro(public override val robot: Robot) : GyroController {
             if (imu == null) return null
             val orientation = imu!!.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
 
-            val delta_angle = orientation.firstAngle - lastAngle.firstAngle
+            var delta_angle = orientation.firstAngle - lastAngle.firstAngle
 
-            if (globalAngle < -180.0) {
-                globalAngle+= 360
-            } else if (globalAngle> 180.0) {
-                globalAngle-= 360
+            if (delta_angle < -180.0) {
+                delta_angle += 360
+            } else if (delta_angle> 180.0) {
+                delta_angle -= 360
             }
 
             globalAngle += delta_angle

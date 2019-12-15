@@ -35,7 +35,7 @@ class PID(var P: Double = 0.0, var I: Double = 0.0, var D: Double = 0.0) {
 }
 
 fun HolonomicDrive.DriveToRotation(rotation: Double, gyro: Gyro, running: ()-> Boolean) {
-    val pidDrive = PID(.015, .00000, 0.5)
+    val pidDrive = PID(.015, .000007, 0.5)
     var t = 0
     var power = 0.0
     do {
