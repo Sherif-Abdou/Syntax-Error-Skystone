@@ -36,6 +36,7 @@ class SkystoneRobot(map: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad, tele
         cWheels.runByController()
         gyro.telemetry()
         telemetry.update()
+        sleep(20)
     }
 
     private fun initializeMotors() {
