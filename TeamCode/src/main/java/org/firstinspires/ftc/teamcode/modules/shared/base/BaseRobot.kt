@@ -10,7 +10,7 @@ open class BaseRobot(override var map: HardwareMap, override var gamepad1: Gamep
     override var y: Float = -1.0f
     override var width: Float = -1.0f
     override var length: Float = -1.0f
-    override var DriveController: DriveController = HolonomicDrive(this)
+    override var DriveController: DriveController = HolonomicDrive(this, null)
     override var CVController: CVController? = null
     override var GyroController: GyroController? = null
     override var leftMotors: MutableList<DcMotor> = mutableListOf()

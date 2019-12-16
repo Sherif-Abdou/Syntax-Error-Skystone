@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
 /** A drive component for a holonomic drivetrain
  * @param robot The robot class the controller is controlling
  */
-class HolonomicDrive(override val robot: Robot) : DriveController {
+class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveController {
     /** Base Drive Speeed */
     var driveSpeed: Double = 0.5
 
@@ -62,6 +62,7 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
     fun telemetry() {
         robot.telemetry.addData("Encoder Position", robot.leftMotors[Robot.FRONT].currentPosition)
         robot.telemetry.addData("Target", robot.leftMotors[Robot.FRONT].targetPosition)
+        robot.telemetry.addData("Power", driveSpeed)
         robot.telemetry.addData("LF", "${robot.leftMotors[Robot.FRONT].power}")
         robot.telemetry.addData("LB", "${robot.leftMotors[Robot.BACK].power}")
         robot.telemetry.addData("RF", "${robot.rightMotors[Robot.FRONT].power}")
@@ -69,22 +70,38 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
     }
 
     override fun driveByController() {
-        val drive = -robot.gamepad1.left_stick_y.toDouble() * MULTIPLIER
-        val strafe = robot.gamepad1.right_stick_x.toDouble() * MULTIPLIER
+        val drive = -robot.gamepad1.left_stick_y.toDouble() * driveSpeed
+        val strafe = robot.gamepad1.right_stick_x.toDouble() * driveSpeed
         var turn = 0.0
+
         if (robot.gamepad1.right_bumper) {
-            turn -= 1.0 * MULTIPLIER
+            turn -= 1.0 * driveSpeed
         }
         if (robot.gamepad1.left_bumper) {
-           turn += 1.0 * MULTIPLIER
+           turn += 1.0 * driveSpeed
         }
 
         if (robot.gamepad1.dpad_up) {
             driveSpeed += 0.1
+            robot.sleep(150)
         }
 
         if (robot.gamepad1.dpad_down) {
             driveSpeed -= 0.1
+            robot.sleep(150)
+        }
+
+        if (robot.gamepad1.right_trigger == 1f) {
+            DriveToRotation(gyro!!.angle!!-45, gyro) {true}
+        }
+
+        if (robot.gamepad1.left_trigger == 1f) {
+            DriveToRotation(gyro!!.angle!!+45, gyro) {true}
+        }
+
+        if (robot.gamepad1.y) {
+            val nearest = (gyro!!.angle!!/45.0).roundToInt()*45.0
+            DriveToRotation(nearest, gyro) {true}
         }
 
         // Checks if the main joystick is being moved, if not check strafe nxt
@@ -115,6 +132,5 @@ class HolonomicDrive(override val robot: Robot) : DriveController {
         const val WHEELDIAMETER = 3.93701
         const val UNITSPERREVOLUTION = 134.4
         const val GEARRATIO = 1
-        const val MULTIPLIER = 0.5
     }
 }
