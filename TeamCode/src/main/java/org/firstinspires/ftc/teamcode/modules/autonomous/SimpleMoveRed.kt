@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.modules.shared.DriveToRotation
 import org.firstinspires.ftc.teamcode.modules.shared.HolonomicDrive
 import org.firstinspires.ftc.teamcode.modules.shared.SkystoneRobot
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.modules.shared.base.Direction
 @Autonomous(name="SimpleMoveRight")
 class SimpleMoveRed: LinearOpMode() {
     lateinit var robot: SkystoneRobot
-    override fun runOpMode() {
+    override fun runOpMode() = runBlocking {
         robot = SkystoneRobot(hardwareMap, gamepad1, gamepad2, telemetry) {time -> sleep(time)}
 
         initializeMotors()

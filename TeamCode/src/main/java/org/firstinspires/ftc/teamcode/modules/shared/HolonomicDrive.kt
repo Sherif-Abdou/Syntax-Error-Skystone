@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.modules.shared
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.modules.shared.base.Direction
 import org.firstinspires.ftc.teamcode.modules.shared.base.Direction.*
 import org.firstinspires.ftc.teamcode.modules.shared.base.DriveController
@@ -16,12 +19,14 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
     /** Base Drive Speeed */
     var driveSpeed: Double = 0.5
 
+    private var timeout = ElapsedTime()
+
     override fun driveByTime(seconds: Long, direction: Direction) {
         when (direction) {
             NORTH -> drive(driveSpeed, 0.0, 0.0)
             SOUTH -> drive(-driveSpeed, 0.0, 0.0)
-            EAST -> drive(0.0, 0.0,-driveSpeed)
-            WEST -> drive(0.0,0.0, driveSpeed)
+            EAST -> drive(0.0, 0.0, -driveSpeed)
+            WEST -> drive(0.0, 0.0, driveSpeed)
         }
         // Pause program execution for the amount of seconds to drive
         robot.sleep(seconds)
@@ -33,7 +38,7 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
         var fLeftEncoder = (inches * UNITSPERREVOLUTION) / (Math.PI * WHEELDIAMETER)
 
         // Reverses the direction if motor goes reverse
-        if (direction == NORTH ||direction == WEST) {
+        if (direction == NORTH || direction == WEST) {
             fLeftEncoder *= -1
         }
 
@@ -44,8 +49,8 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
         when (direction) {
             NORTH -> drive(driveSpeed, 0.0, 0.0)
             SOUTH -> drive(-driveSpeed, 0.0, 0.0)
-            EAST -> drive(0.0, 0.0,-driveSpeed)
-            WEST -> drive(0.0,0.0, driveSpeed)
+            EAST -> drive(0.0, 0.0, -driveSpeed)
+            WEST -> drive(0.0, 0.0, driveSpeed)
         }
 
         while (robot.leftMotors[Robot.FRONT].isBusy
@@ -74,35 +79,42 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
         val strafe = robot.gamepad1.right_stick_x.toDouble() * driveSpeed
         var turn = 0.0
 
+        if (timeout.milliseconds() <= 250) {
+            if (robot.gamepad1.dpad_up) {
+                driveSpeed += 0.1
+                timeout.reset()
+            }
+
+            if (robot.gamepad1.dpad_down) {
+                driveSpeed -= 0.1
+                timeout.reset()
+            }
+
+            if (robot.gamepad1.right_trigger == 1f) {
+                DriveToRotation(gyro!!.angle!! - 45, gyro) { true }
+                timeout.reset()
+            }
+
+            if (robot.gamepad1.left_trigger == 1f) {
+                DriveToRotation(gyro!!.angle!! + 45, gyro) { true }
+                timeout.reset()
+            }
+
+            if (robot.gamepad1.y) {
+                val nearest = (gyro!!.angle!! / 45.0).roundToInt() * 45.0
+                DriveToRotation(nearest, gyro) { true }
+                timeout.reset()
+            }
+        }
+
         if (robot.gamepad1.right_bumper) {
             turn -= 1.0 * driveSpeed
         }
+
         if (robot.gamepad1.left_bumper) {
-           turn += 1.0 * driveSpeed
+            turn += 1.0 * driveSpeed
         }
 
-        if (robot.gamepad1.dpad_up) {
-            driveSpeed += 0.1
-            robot.sleep(150)
-        }
-
-        if (robot.gamepad1.dpad_down) {
-            driveSpeed -= 0.1
-            robot.sleep(150)
-        }
-
-        if (robot.gamepad1.right_trigger == 1f) {
-            DriveToRotation(gyro!!.angle!!-45, gyro) {true}
-        }
-
-        if (robot.gamepad1.left_trigger == 1f) {
-            DriveToRotation(gyro!!.angle!!+45, gyro) {true}
-        }
-
-        if (robot.gamepad1.y) {
-            val nearest = (gyro!!.angle!!/45.0).roundToInt()*45.0
-            DriveToRotation(nearest, gyro) {true}
-        }
 
         // Checks if the main joystick is being moved, if not check strafe nxt
         if (drive != 0.0 || turn != 0.0 || strafe != 0.0) {
@@ -110,14 +122,16 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
         } else {
             brake()
         }
+
+
         telemetry()
     }
 
     fun drive(drive: Double, turn: Double, strafe: Double) {
-        robot.leftMotors[Robot.FRONT].power = Range.clip(drive+strafe+turn, -1.0, 1.0)
-        robot.rightMotors[Robot.FRONT].power = Range.clip(drive-strafe-turn, -1.0, 1.0)
-        robot.leftMotors[Robot.BACK].power = Range.clip(drive-strafe+turn, -1.0, 1.0)
-        robot.rightMotors[Robot.BACK].power = Range.clip(drive+strafe-turn, -1.0, 1.0)
+        robot.leftMotors[Robot.FRONT].power = Range.clip(drive + strafe + turn, -1.0, 1.0)
+        robot.rightMotors[Robot.FRONT].power = Range.clip(drive - strafe - turn, -1.0, 1.0)
+        robot.leftMotors[Robot.BACK].power = Range.clip(drive - strafe + turn, -1.0, 1.0)
+        robot.rightMotors[Robot.BACK].power = Range.clip(drive + strafe - turn, -1.0, 1.0)
     }
 
     fun brake() {
