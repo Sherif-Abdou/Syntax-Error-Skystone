@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.modules.autonomous
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.modules.shared.Direction
 import org.firstinspires.ftc.teamcode.modules.shared.HolonomicDrive
-import org.firstinspires.ftc.teamcode.modules.shared.base.Direction
-import org.firstinspires.ftc.teamcode.modules.shared.base.Robot
-
+import org.firstinspires.ftc.teamcode.modules.shared.SkystoneRobot
 
 enum class Starts {
     BLUETOP, BLUEBOTTOM, REDTOP, REDBOTTOM
 }
 
 // The robot's map of the game feild
-class Map(private val start: Starts, val robot: Robot) {
+class Map(private val start: Starts, val robot: SkystoneRobot) {
     fun initializeMap(side: Double, back: Double) {
         when (start) {
             Starts.BLUEBOTTOM -> {

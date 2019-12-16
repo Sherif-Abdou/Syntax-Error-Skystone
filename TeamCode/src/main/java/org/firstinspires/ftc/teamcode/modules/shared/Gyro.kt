@@ -5,10 +5,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
-import org.firstinspires.ftc.teamcode.modules.shared.base.GyroController
-import org.firstinspires.ftc.teamcode.modules.shared.base.Robot
 
-public class Gyro(public override val robot: Robot) : GyroController {
+public class Gyro(val robot: SkystoneRobot) {
     private var imu: BNO055IMU? = null
     private var lastAngle = Orientation()
     private var globalAngle = 0.0

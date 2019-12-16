@@ -8,11 +8,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.modules.autonomous.Map
 import org.firstinspires.ftc.teamcode.modules.autonomous.Starts
-import org.firstinspires.ftc.teamcode.modules.shared.base.BaseRobot
 
-class SkystoneRobot(map: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad, telemetry: Telemetry, sleep: (Long)->Unit) : BaseRobot(map, gamepad1, gamepad2, telemetry, sleep) {
-    val crane = Crane(this)
-    val cWheels = CWheels(this)
+class SkystoneRobot(val map: HardwareMap, val gamepad1: Gamepad, val gamepad2: Gamepad, val telemetry: Telemetry, val sleep: (Long) -> Unit) {
+    var y: Float = 0f
+    var x: Float = 0f
+    var imu: BNO055IMU? = null
+    val rightMotors: MutableList<DcMotor> = mutableListOf()
+    var DriveController: HolonomicDrive
+    var leftMotors: MutableList<DcMotor> = mutableListOf()
     lateinit var distanceSensor: UltraSonicSensor
     val board = Map(Starts.BLUEBOTTOM, this)
     val gyro = Gyro(this)
@@ -25,15 +28,11 @@ class SkystoneRobot(map: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad, tele
         initializeMotors()
         initializeServos()
 
-        this.crane.initialize()
-        this.cWheels.initialize()
         this.gyro.initialize()
     }
 
     fun teleoploop() {
         DriveController.driveByController()
-        crane.runByController()
-        cWheels.runByController()
         gyro.telemetry()
         telemetry.update()
         sleep(20)

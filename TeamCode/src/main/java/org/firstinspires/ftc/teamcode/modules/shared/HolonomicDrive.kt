@@ -1,19 +1,24 @@
 package org.firstinspires.ftc.teamcode.modules.shared
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.robot.Robot
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
-import org.firstinspires.ftc.teamcode.modules.shared.base.Direction
-import org.firstinspires.ftc.teamcode.modules.shared.base.Direction.*
-import org.firstinspires.ftc.teamcode.modules.shared.base.DriveController
-import org.firstinspires.ftc.teamcode.modules.shared.base.Robot
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /** A drive component for a holonomic drivetrain
  * @param robot The robot class the controller is controlling
  */
-class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveController {
+enum class Direction {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
+}
+
+
+class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
     /** Base Drive Speeed */
     var driveSpeed: Double = 0.5
 
@@ -22,12 +27,12 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
     private var base_angle = 0.0
     val pid = PID(.015, .000007, 0.5)
 
-    override fun driveByTime(seconds: Long, direction: Direction) {
+    fun driveByTime(seconds: Long, direction: Direction) {
         when (direction) {
-            NORTH -> drive(driveSpeed, 0.0, 0.0)
-            SOUTH -> drive(-driveSpeed, 0.0, 0.0)
-            EAST -> drive(0.0, 0.0, -driveSpeed)
-            WEST -> drive(0.0, 0.0, driveSpeed)
+            Direction.NORTH -> drive(driveSpeed, 0.0, 0.0)
+            Direction.SOUTH -> drive(-driveSpeed, 0.0, 0.0)
+            Direction.EAST -> drive(0.0, 0.0, -driveSpeed)
+            Direction.WEST -> drive(0.0, 0.0, driveSpeed)
         }
         // Pause program execution for the amount of seconds to drive
         robot.sleep(seconds)
@@ -35,47 +40,47 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
         brake()
     }
 
-    override fun driveByDistance(inches: Int, direction: Direction) {
+    fun driveByDistance(inches: Int, direction: Direction) {
         var fLeftEncoder = (inches * UNITSPERREVOLUTION) / (Math.PI * WHEELDIAMETER)
 
         // Reverses the direction if motor goes reverse
-        if (direction == NORTH || direction == WEST) {
+        if (direction == Direction.NORTH || direction == Direction.WEST) {
             fLeftEncoder *= -1
         }
 
-        robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        robot.leftMotors[Robot.FRONT].targetPosition = fLeftEncoder.roundToInt()
-        robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_TO_POSITION
+        robot.leftMotors[Constants.FRONT].mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftMotors[Constants.FRONT].targetPosition = fLeftEncoder.roundToInt()
+        robot.leftMotors[Constants.FRONT].mode = DcMotor.RunMode.RUN_TO_POSITION
 
         when (direction) {
-            NORTH -> drive(driveSpeed, 0.0, 0.0)
-            SOUTH -> drive(-driveSpeed, 0.0, 0.0)
-            EAST -> drive(0.0, 0.0, -driveSpeed)
-            WEST -> drive(0.0, 0.0, driveSpeed)
+            Direction.NORTH -> drive(driveSpeed, 0.0, 0.0)
+            Direction.SOUTH -> drive(-driveSpeed, 0.0, 0.0)
+            Direction.EAST -> drive(0.0, 0.0, -driveSpeed)
+            Direction.WEST -> drive(0.0, 0.0, driveSpeed)
         }
 
-        while (robot.leftMotors[Robot.FRONT].isBusy
-                && abs(robot.leftMotors[Robot.FRONT].targetPosition) >= abs(robot.leftMotors[Robot.FRONT].currentPosition)) {
+        while (robot.leftMotors[Constants.FRONT].isBusy
+                && abs(robot.leftMotors[Constants.FRONT].targetPosition) >= abs(robot.leftMotors[Constants.FRONT].currentPosition)) {
             telemetry()
             robot.telemetry.update()
         }
 
         brake()
 
-        robot.leftMotors[Robot.FRONT].mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        robot.leftMotors[Constants.FRONT].mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun telemetry() {
-        robot.telemetry.addData("Encoder Position", robot.leftMotors[Robot.FRONT].currentPosition)
-        robot.telemetry.addData("Target", robot.leftMotors[Robot.FRONT].targetPosition)
+        robot.telemetry.addData("Encoder Position", robot.leftMotors[Constants.FRONT].currentPosition)
+        robot.telemetry.addData("Target", robot.leftMotors[Constants.FRONT].targetPosition)
         robot.telemetry.addData("Power", driveSpeed)
-        robot.telemetry.addData("LF", "${robot.leftMotors[Robot.FRONT].power}")
-        robot.telemetry.addData("LB", "${robot.leftMotors[Robot.BACK].power}")
-        robot.telemetry.addData("RF", "${robot.rightMotors[Robot.FRONT].power}")
-        robot.telemetry.addData("RB", "${robot.rightMotors[Robot.BACK].power}")
+        robot.telemetry.addData("LF", "${robot.leftMotors[Constants.FRONT].power}")
+        robot.telemetry.addData("LB", "${robot.leftMotors[Constants.BACK].power}")
+        robot.telemetry.addData("RF", "${robot.rightMotors[Constants.FRONT].power}")
+        robot.telemetry.addData("RB", "${robot.rightMotors[Constants.BACK].power}")
     }
 
-    override fun driveByController() {
+    fun driveByController() {
         val drive = -robot.gamepad1.left_stick_y.toDouble() * driveSpeed
         val strafe = robot.gamepad1.right_stick_x.toDouble() * driveSpeed
         var turn = 0.0
@@ -146,10 +151,10 @@ class HolonomicDrive(override val robot: Robot, val gyro: Gyro?) : DriveControll
     }
 
     fun drive(drive: Double, turn: Double, strafe: Double) {
-        robot.leftMotors[Robot.FRONT].power = Range.clip(drive + strafe + turn, -1.0, 1.0)
-        robot.rightMotors[Robot.FRONT].power = Range.clip(drive - strafe - turn, -1.0, 1.0)
-        robot.leftMotors[Robot.BACK].power = Range.clip(drive - strafe + turn, -1.0, 1.0)
-        robot.rightMotors[Robot.BACK].power = Range.clip(drive + strafe - turn, -1.0, 1.0)
+        robot.leftMotors[Constants.FRONT].power = Range.clip(drive + strafe + turn, -1.0, 1.0)
+        robot.rightMotors[Constants.FRONT].power = Range.clip(drive - strafe - turn, -1.0, 1.0)
+        robot.leftMotors[Constants.BACK].power = Range.clip(drive - strafe + turn, -1.0, 1.0)
+        robot.rightMotors[Constants.BACK].power = Range.clip(drive + strafe - turn, -1.0, 1.0)
     }
 
     fun brake() {
