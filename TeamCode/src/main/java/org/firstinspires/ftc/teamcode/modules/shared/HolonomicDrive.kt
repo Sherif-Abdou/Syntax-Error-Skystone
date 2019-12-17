@@ -25,7 +25,7 @@ class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
     private var timeout = ElapsedTime()
     private var stable_timeout = ElapsedTime()
     private var base_angle = 0.0
-    val pid = PID(.015, .000007, 0.5)
+    val pid = PID(Constants.P, Constants.I, Constants.D)
 
     fun driveByTime(seconds: Long, direction: Direction) {
         when (direction) {
@@ -100,6 +100,7 @@ class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
                 val new_angle = gyro!!.angle!! - 45
                 DriveToRotation(new_angle ,gyro) { true }
                 base_angle  = new_angle
+                pid.reset()
                 timeout.reset()
             }
 
@@ -107,6 +108,7 @@ class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
                 val new_angle = gyro!!.angle!! + 45
                 DriveToRotation(new_angle , gyro) { true }
                 base_angle  = new_angle
+                pid.reset()
                 timeout.reset()
             }
 
@@ -114,6 +116,7 @@ class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
                 val nearest = (gyro!!.angle!! / 45.0).roundToInt() * 45.0
                 DriveToRotation(nearest, gyro) { true }
                 base_angle = nearest
+                pid.reset()
                 timeout.reset()
             }
         }
@@ -144,6 +147,7 @@ class HolonomicDrive(val robot: SkystoneRobot, val gyro: Gyro?) {
         } else {
             brake()
             base_angle = gyro!!.angle!!
+            pid.reset()
         }
 
 
